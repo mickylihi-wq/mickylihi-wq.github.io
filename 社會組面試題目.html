@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>社會組面試練習 - 終極不重複版</title>
+    <style>
+        :root { --primary-color: #00796b; --bg-color: #f4f7f6; }
+        body { font-family: "Microsoft JhengHei", sans-serif; background-color: var(--bg-color); margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        nav { background: #2c3e50; width: 100%; padding: 10px 0; display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; position: sticky; top: 0; z-index: 100; }
+        nav button { background: #34495e; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; transition: 0.3s; font-size: 0.85rem; }
+        nav button.active { background: var(--primary-color); font-weight: bold; }
+        .container { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); width: 95%; max-width: 750px; margin: 30px 0; text-align: center; }
+        h1 { color: #333; margin-top: 0; font-size: 1.5rem; }
+        #setup-section textarea { width: 100%; height: 400px; padding: 12px; border: 2px solid #ddd; border-radius: 8px; resize: vertical; box-sizing: border-box; font-size: 1rem; line-height: 1.5; }
+        .btn-main { background-color: var(--primary-color); color: white; padding: 12px 30px; border: none; border-radius: 50px; cursor: pointer; font-size: 1.1rem; font-weight: bold; margin-top: 15px; transition: 0.2s; }
+        .btn-main:hover { background-color: #00695c; }
+        .btn-random { background-color: #e67e22; color: white; width: 100%; padding: 20px; border: none; border-radius: 12px; cursor: pointer; font-size: 1.4rem; font-weight: bold; transition: 0.2s; }
+        .btn-random:hover { background-color: #d35400; }
+        #display-area { min-height: 220px; display: flex; align-items: center; justify-content: center; background-color: #fff8e1; border: 3px dashed #ffb300; padding: 30px; border-radius: 12px; font-size: 1.5rem; color: #2c3e50; margin: 20px 0; line-height: 1.5; font-weight: 500; }
+        .progress-tag { background: #e0f2f1; color: #00796b; padding: 5px 15px; border-radius: 20px; font-weight: bold; margin-bottom: 10px; display: inline-block; }
+        .hidden { display: none; }
+        .footer-link { margin-top: 20px; color: #888; font-size: 0.9rem; text-decoration: underline; cursor: pointer; display: inline-block; }
+    </style>
+</head>
+<body>
+
+<nav id="dept-nav"></nav>
+
+<div class="container">
+    <h1 id="current-dept-title">載入中...</h1>
+    <div id="setup-section">
+        <p style="text-align: left; color: #666; font-size: 0.9rem;">【不重複模式】系統已預載 30 題考題，抽完前不會重複：</p>
+        <textarea id="questionInput"></textarea>
+        <br>
+        <button class="btn-main" onclick="startPractice()">儲存並進入練習模式</button>
+    </div>
+    <div id="practice-section" class="hidden">
+        <div id="progressDisplay" class="progress-tag">剩餘題數：--</div>
+        <div id="display-area">準備好了，請點擊抽題！</div>
+        <button class="btn-random" onclick="pickQuestion()">🎲 隨機抽一題 (不重複)</button>
+        <br>
+        <div class="footer-link" onclick="backToSetup()">重新編輯本系題庫 / 更換科系</div>
+    </div>
+</div>
+
+<script>
+    const deptData = {
+        "經濟學系": `為什麼選經濟系而非企管或財金系？
+「經濟學家」在政府政策制定中的角色？
+分享高中參與社團或班級活動中的資源分配經驗。
+經濟系需要高度邏輯分析與對數字敏感的特質？
+本系課程中對「微觀」或「宏觀」經濟較感興趣的部分？
+經濟系除了金融業外的職涯發展（如數據分析、智庫）？
+用一個「經濟學理論」形容自己（如邊際效用、機會成本）。
+如何向小學生解釋「通貨膨脹」？
+對未來基本工資調漲與物價關係的看法？
+化解「經濟學就是教人賺錢」誤解的方式？
+發展數位貨幣（CBDC）最大的挑戰？
+「財政政策」與「貨幣政策」的本質區別？
+當模型預測與現實市場走勢不符時的應對？
+生活中最讓你覺得符合「資源有限，欲望無窮」的例子？
+對於需要大量數學處理與統計軟體運算的心理準備？
+對「貧富差距」日益擴大解決方案的看法？
+「大數據」在預測消費行為上的具體優勢？
+對市售「買一送一」行銷策略的經濟學分析？
+支持政府發放消費券來刺激經濟嗎？
+高齡社會中勞動力短缺對經濟成長的影響？
+AI 自動化取代人工對於就業市場的衝擊看法？
+經濟學在「環境保護（如碳交易）」中的作用？
+處理龐大數據時細心程度與抗壓性的表現？
+面對枯燥的理論推導與圖形分析維持熱忱的方式？
+蒐集與整理資料（如 Excel、爬蟲）的經驗？
+發現經濟數據造假或統計偏誤時的處理流程？
+與團隊在討論專題報告意見不合時的處理？
+未來十年台灣最需要解決的經濟結構問題？
+大學四年想培養的跨領域（如程式、外語）能力？
+最後給我們一個非錄取你不可的理由。`,
+
+        "Department of Economics": `Why choose Economics instead of Business Administration or Finance?
+What is the core role of an "Economist" in government policymaking?
+Share an experience of resource allocation in a high school club or activity.
+What traits make you suitable for the logical analysis required in Economics?
+Which part of the curriculum interests you more: Micro or Macroeconomics?
+What are the career paths for Econ majors outside of banking (e.g., Data Science)?
+Describe yourself using an "Economic Theory" (e.g., Opportunity Cost).
+How would you explain "Inflation" to an elementary school student?
+What is your take on the relationship between minimum wage and price levels?
+How do you debunk the myth that "Economics is just about making money"?
+What is the biggest challenge in developing Central Bank Digital Currencies?
+What is the fundamental difference between Fiscal and Monetary policy?
+How do you respond when a model contradicts real-world market trends?
+Give a real-life example of "Limited resources, unlimited wants."
+How have you prepared for heavy workloads in Calculus and Statistics?
+What are your thoughts on solutions for the widening wealth gap?
+What are the advantages of "Big Data" in predicting consumer behavior?
+Provide an economic analysis of "Buy One Get One Free" marketing strategies.
+Do you support government-issued vouchers to stimulate the economy?
+How does an aging population affect long-term economic growth?
+What is your view on AI automation displacing labor in the job market?
+How does Economics play a role in environmental protection (e.g., Carbon Trading)?
+How do you demonstrate attention to detail when handling large datasets?
+How do you maintain passion when facing abstract theoretical derivations?
+What is your experience with data collection or software (e.g., Excel, Python)?
+How would you handle discovering a statistical bias in your research?
+How do you resolve disagreements during a group research project?
+What is the most critical economic structural issue for Taiwan in the next decade?
+What interdisciplinary skills (e.g., coding, languages) do you want to develop?
+Give us one final reason why we must admit you to this department.`,
+
+        "法律學系": `為什麼選法律系而非政治或社會系？
+「法律人」在法治社會中的核心角色？
+分享高中參與辯論或處理衝突的經驗。
+法律系需要高度文字理解與邏輯推演的特質？
+本系課程中對「公法」、「民法」或「刑法」較感興趣的部分？
+法律系除了當律師法官外的職涯發展（如企業法務、非營利組織）？
+用一個「法律原則」形容自己（如比例原則、誠信原則）。
+如何向小學生解釋「無罪推定」？
+對近年來廢除死刑或國民法官制度的看法？
+化解「法律人都在鑽法律漏洞」誤解的方式？
+發展人工智慧（AI）法律規範最大的挑戰？
+「實體法」與「程序法」在司法公正上的本質區別？
+當法律條文與你內心的正義價值衝突時的應對？
+生活中最令你感受到「法律與生活息息相關」的例子？
+對於需要背誦龐大法條與研讀大量判例的心理準備？
+對「惡法亦法」與「惡法非法」爭議的看法？
+「科技偵查」在打擊犯罪與保護隱私之間的平衡？
+對市售契約中不平等條款的法律觀察？
+支持政府針對假訊息進行立法管制嗎？
+高齡社會中「高齡者權益保障」與「意定監護」的看法？
+AI 創作作品在著作權法歸屬上的重要性看法？
+法律技術在「國際人權保障」中的作用？
+撰寫法律文書時邏輯嚴謹與用字精確的表現？
+面對枯燥的論理過程與學說爭議維持熱忱的方式？
+蒐集與整理文獻（如法源法律網、判決書查詢）的經驗？
+發現辯護對象確實犯罪但需為其爭取權益時的心理調適？
+與團隊討論個案報告時意見不合的處理？
+未來十年台灣最需要修正或制定的關鍵法規？
+大學四年想培養的跨領域能力？
+最後給我們一個非錄取你不可的理由。`,
+
+        "企業管理學系": `為什麼選企管系而非經濟或財金系？
+「管理者」在企業組織中的核心價值？
+分享高中擔任幹部或籌備活動的領導經驗。
+企管系需要溝通協調與解決問題的特質？
+本系課程中「五管」（產銷人發財）最感興趣的部分？
+企管系除了進入企業外的職涯發展（如創業、顧問）？
+用一個「管理學工具」形容自己（如 SWOT、PDCA）。
+如何向小學生解釋「什麼是管理」？
+對未來「數位轉型」影響企業競爭力的看法？
+化解「企管系學得雜而不精」誤解的方式？
+發展「綠色供應鏈」或 ESG 轉型最大的挑戰？
+「領導（Leadership）」與「管理（Management）」的本質區別？
+當團隊決策出錯導致虧損時的應對與負責方式？
+生活中最讓你覺得符合「資源整合」概念的例子？
+對於需要進行大量簡報報告與團隊協作的心理準備？
+對「遠端辦公」與「傳統辦公」效率優劣的看法？
+「大數據分析」在精準行銷上的具體優勢？
+對市售品牌「飢餓行銷」策略的看法？
+支持企業為了獲利而將生產線外移至低薪國家嗎？
+高齡社會中企業如何應對勞動力結構改變？
+AI 自動化與機器人協作對未來管理模式的影響？
+管理者在「企業社會責任」中扮演的角色？
+分析市場趨勢時的數據解讀能力與洞察力表現？
+面對高壓競爭環境與變動市場維持熱忱的方式？
+使用管理工具（如 Excel、專案管理軟體）的經驗？
+發現團隊成員在專案中「搭便車（Free-rider）」的處理？
+與團隊意見分歧時，如何達成共識而非強權領導？
+未來十年台灣企業最需要具備的國際競爭力？
+大學四年想培養的跨領域（如數據、外語）能力？
+最後給我們一個非錄取你不可的理由。`,
+
+        "財務金融學系": `為什麼選財金系而非經濟或企管系？
+「財務分析師」在資本市場中的核心角色？
+分享高中管理個人零用錢或投資理財的經驗。
+財金系需要高度數字敏感度與風險控管的特質？
+本系課程中對「投資學」、「公司理財」或「金融機構」較感興趣的部分？
+財金系除了進入銀行業外的職涯發展（如金融科技、精算）？
+用一個「金融指標」形容自己（如 Beta 值、報酬率）。
+如何向小學生解釋「複利效應」？
+對未來「升息或降息」對股市影響的看法？
+化解「財金系就是教人炒股」誤解的方式？
+發展「加密貨幣」與「去中心化金融（DeFi）」最大的挑戰？
+「投資」與「投機」在行為上的本質區別？
+當預測模型在黑天鵝事件中失效時的應對？
+生活中最讓你覺得符合「風險與報酬成正比」的例子？
+對於需要大量統計模型與高壓市場環境的心理準備？
+對「永續金融（ESG 投資）」未來發展的看法？
+「演算法交易」在提升市場效率上的具體優勢？
+對市售「高股息 ETF」深受小資族歡迎的分析？
+支持政府加強對高頻交易的稅收管制嗎？
+高齡社會中「退休金規劃」與「長照保險」的經濟看法？
+AI 機器人理財（Robo-Advisor）取代真人理財顧問的看法？
+財金技術在「企業併購（M&A）」中的關鍵作用？
+處理財務報表時的細心程度與邏輯勾稽表現？
+面對瞬息萬變隨時更新的全球金融資訊維持熱忱的方式？
+使用財務軟體（如 Excel 函數、Bloomberg）的經驗？
+發現財務數據異常或有操縱報表嫌疑時的處理？
+與團隊共同模擬投資組合時意見分歧時的處理？
+未來十年台灣金融業最需要轉型的關鍵方向？
+大學四年想培養的跨領域（如程式語言、法律）能力？
+最後給我們一個非錄取你不可的理由。`,
+
+        "會計學系": `為什麼選會計系而非財金或企管系？
+「會計師」作為資本市場看門人的核心角色？
+分享高中擔任班費管理或細心處理數據的經驗。
+會計系需要高度誠信、抗壓與嚴謹邏輯的特質？
+本系課程中對「財務會計」、「成本會計」或「審計」較感興趣的部分？
+會計系除了進入四大事務所以外的職涯發展（如法務會計、公務員）？
+用一個「會計科目」形容自己（如資產、公積）。
+如何向小學生解釋「借貸法則（左借右貸）」？
+對未來「全球最低稅負制」對企業影響的看法？
+化解「會計就是算帳，會被 AI 取代」誤解的方式？
+推動「永續報告書（ESG 確信）」會計準則最大的挑戰？
+「財務報表」與「管理報表」在決策用途上的本質區別？
+當帳目無法平衡（不平）或發現錯誤時的應對態度？
+生活中最讓你覺得符合「成本效益原則」的例子？
+對於審計忙季（Busy Season）高強度工作的心理準備？
+對「財務透明度」與企業競爭力之間關係的看法？
+「大數據審計」在偵測企業舞弊上的具體優勢？
+對企業透過「創意會計」美化報表現象的評價？
+支持政府加強對虛擬資產交易的課稅與監管嗎？
+高齡社會中「遺產稅」與「信託會計」的重要性看法？
+AI 自動化分類分錄對基層會計人員轉型的影響看法？
+會計專業在「企業內部控制」與風險管理中的作用？
+核對龐大憑證與報表時的專注度與精確性表現？
+面對枯燥法條更新與繁瑣查帳程序維持熱忱的方式？
+使用會計資訊系統（如 Excel 樞紐、ERP）的經驗？
+發現主管要求「調整」帳目以達成績效目標時的處理？
+與團隊在編製合併報表意見分歧時的處理？
+未來十年台灣會計準則（IFRSs）最重要的接軌方向？
+大學四年想培養的跨領域（如稅法、資訊分析）能力？
+最後給我們一個非錄取你不可的理由。`,
+
+        "資訊管理學系": `為什麼選資管系而非資工或企管系？
+「資管人」作為技術與業務橋樑的核心角色？
+分享高中參與專題或解決資訊系統問題的經驗。
+資管系需要邏輯思維與跨領域溝通的特質？
+本系課程中對「系統分析」、「資料庫」或「程式開發」較感興趣的部分？
+資管系除了工程師外的職涯發展（如 PM、數據分析師、ERP 顧問）？
+用一個「資料結構」形容自己（如 Stack, Queue, Tree）。
+如何向小學生解釋「什麼是演算法」？
+對未來「生成式 AI」改變企業營運模式的看法？
+化解「資管系什麼都學但不精」誤解的方式？
+推動企業「雲端轉型」或數位化最大的挑戰？
+「資管（MIS）」與「資工（CS）」在學術與實務上的本質區別？
+當系統上線出現重大 Bug 導致業務中斷時的應對？
+生活中最讓你覺得符合「流程優化」概念的例子？
+對於需要持續追蹤新技術並進行大量專案實作的心理準備？
+對「資訊安全」與「使用者便利性」衝突時的權衡看法？
+「大數據分析」如何具體協助企業提升決策效率？
+對目前市面上各種「訂閱制服務」盛行的商務邏輯看法？
+支持政府推動「數位身分證」或電子化政務的隱私配套嗎？
+高齡社會中「遠距醫療資訊系統」的發展看法？
+AI 自動化編碼技術對未來初級程式員就業的衝擊？
+資管專業在「電子商務」與供應鏈管理中的關鍵作用？
+在撰寫程式或邏輯排錯時的耐心與細緻程度表現？
+面對枯燥的系統維運與不斷更新的技術框架維持熱忱的方式？
+使用資訊工具（如 SQL, Python, No-code 工具）的經驗？
+發現團隊成員在開發專案中進度嚴重落後（拖油瓶）的處理？
+與技術開發端與業務需求端溝通意見分歧時的處理？
+未來十年台灣企業最急需解決的資訊架構問題？
+大學四年想培養的跨領域（如財金、心理學）能力？
+最後給我們一個非錄取你不可的理由。`,
+
+        "大眾傳播學系": `為什麼選大傳系而非新聞或廣電系？
+「傳播者」在數位碎片化時代的核心角色？
+分享高中參與校刊、社群經營或影音創作的經驗。
+大傳系需要敏銳社會觀察與敘事能力的特質？
+本系課程中對「媒體識讀」、「公關廣告」或「影音製作」較感興趣的部分？
+大傳系除了記者外的職涯發展（如數位行銷、策展、自媒體）？
+用一個「傳播媒介」形容自己（如廣播、社群、紀錄片）。
+如何向小學生解釋「什麼是假新聞」？
+對未來「短影音（TikTok/Reels）」成為主流溝通方式的看法？
+化解「大傳系畢業即失業」或「媒體混亂」誤解的方式？
+推動「媒體自律」在點閱率至上的環境下最大的挑戰？
+「傳統媒體」與「新媒體」在內容產製上的本質區別？
+當發布的報導或內容出現爭議甚至公關危機時的應對？
+生活中最讓你覺得符合「傳播影響力」改變認知的例子？
+對於需要熬夜剪接、趕稿與高壓追蹤時事的心理準備？
+對「演算法」決定大眾認知與同溫層現象的看法？
+「自媒體」與「專業新聞組織」在公信力上的權衡？
+對市售品牌「置入性行銷」與內容真實性的看法？
+支持政府立法管制社群平台上的仇恨言論嗎？
+高齡社會中媒體如何解決「數位落差」與資訊孤立？
+AI 生成內容（AIGC）對未來大眾傳播產業的衝擊？
+傳播專業在「社會倡議」與公益推廣中的作用？
+處理腳本撰寫或素材剪輯時的細節要求與美感表現？
+面對瞬息萬變的新聞熱點與科技更迭維持熱忱的方式？
+使用傳播工具（如 Adobe 系列、社群數據分析）的經驗？
+發現合作團隊成員在專案中產出品質不佳或截稿遲到的處理？
+與團隊在腳本創意或敘事觀點意見分歧時的處理？
+未來十年台灣媒體環境最需要建立的價值觀？
+大學四年想培養的跨領域（如社會學、數據行銷）能力？
+最後給我們一個非錄取你不可的理由。`,
+
+        "政治學系": `為什麼選政治系而非法律或外交系？
+「政治家」與「政客」在社會運作中的本質區別？
+分享高中參與學生自治、公民論壇或公共事務的經驗。
+政治系需要理性批判思維與高度同理心的特質？
+本系課程中對「政治理論」、「比較政治」或「國際關係」較感興趣的部分？
+政治系除了從政外的職涯發展（如政策分析、民調專家、公關公司）？
+用一個「政治制度」形容自己（如內閣制、聯邦制）。
+如何向小學生解釋「什麼是民主」？
+對未來「網路投票」取代實體投票的可能性與風險看法？
+化解「讀政治以後只能參與選戰」誤解的方式？
+推動「跨黨派合作」在極化政治環境下最大的挑戰？
+「政治權力」與「公共利益」在實務操作上的權衡？
+當你的政治理念與親友或主流輿論產生強烈衝突時的應對？
+生活中最讓你覺得符合「政治就是分配的藝術」的例子？
+對於需要閱讀大量歷史文獻、政治哲學與社會統計的心理準備？
+對「民粹主義」在當代民主國家盛行的現象觀察？
+「大數據分析」如何精準預測選民行為與影響選戰策略？
+對市售「政治公關」將候選人偶像化包裝的看法？
+支持降低投票年齡至 18 歲（或更低）以促進世代正義嗎？
+高齡社會中「銀髮選民」比例增加對政策導向的影響看法？
+AI 深偽技術（Deepfake）對選戰真實性與民主信任的衝擊？
+政治專業在「國際談判」與區域穩定中的關鍵作用？
+撰寫政策評論或分析報告時的客觀性與邏輯架構表現？
+面對政治現實的黑暗面與理想幻滅時維持熱忱的方式？
+使用政治研究工具（如 SPSS 統計軟體、文獻回顧）的經驗？
+發現同儕在討論公共議題時只有情緒發洩而非理性論證的處理？
+與團隊在模擬聯合國或分組報告觀點意見分歧時的處理？
+未來十年台灣最需要解決的憲政體制或政黨政治問題？
+大學四年想培養的跨領域（如經濟學、數據科學）能力？
+最後給我們一個非錄取你不可的理由。`,
+
+        "心理學系": `為什麼選心理系而非社會系或輔導諮商系？
+「心理學家」在維護社會心理健康中的核心角色？
+分享高中觀察他人行為或運用同理心解決衝突的經驗。
+心理學系需要高度客觀理性與感性觀察並重的特質？
+本系課程中對「認知心理」、「發展心理」或「社會心理」較感興趣的部分？
+心理學系除了當諮商師外的職涯發展（如 UX 使用者經驗、人資、行銷）？
+用一個「心理學效應」形容自己（如錨定效應、安慰劑效應）。
+如何向小學生解釋「什麼是潛意識」？
+對未來「數位成癮」對青少年心理發展影響的看法？
+化解「心理系看穿別人在想什麼」誤解的方式？
+發展「人工智慧心理治療（AI Chatbots）」最大的挑戰？
+「心理諮商」與「精神醫學」在助人實務上的本質區別？
+當受試者的行為數據與你的預期假設完全相反時的應對？
+生活中最讓你覺得符合「知覺（Perception）不等於現實」的例子？
+對於需要大量統計數學、生理實驗與撰寫長篇報告的心理準備？
+對「正向心理學」在現代高壓環境下是否過度強調的看法？
+「神經科學」在解釋人類情緒行為上的具體優勢？
+對市售「人格測驗（如 MBTI）」風靡社交圈的經濟與心理分析？
+支持政府針對校園心理健康進行大規模普查與介入嗎？
+高齡社會中「失智症照顧者」的心理韌性與支持看法？
+AI 生成藝術是否能反映人類集體無意識的看法？
+心理專業在「犯罪預防」與更生人重返社會中的作用？
+進行心理實驗或質性訪談時的嚴謹度與倫理操守表現？
+面對人類情感負能量與研究枯燥數據時維持熱忱的方式？
+使用心理研究工具（如 SPSS、測驗量表、眼動儀）的經驗？
+發現研究夥伴在實驗過程中誘導受試者產生偏誤數據時的處理？
+與團隊在討論個案個資保護與研究公開性意見分歧時的處理？
+未來十年台灣最需要建立的心理衛生健康觀念？
+大學四年想培養的跨領域（如神經科學、數據分析）能力？
+最後給我們一個非錄取你不可的理由。`,
+
+        "中國文學系": `為什麼選中文系而非歷史或外文系？
+「中文人」在當代數位敘事與文化轉型中的核心角色？
+分享高中參與文學創作、閱讀札記或語文競賽的經驗。
+中文系需要敏銳的感性觀察與紮實文獻校勘的特質？
+本系課程中對「古典文學」、「現代文學」或「語言文字學」較感興趣的部分？
+中文系除了教職外的職涯發展（如文案企劃、遊戲編劇、內容編輯）？
+用一個「文學意象」形容自己（如孤雲、流水、歲寒松柏）。
+如何向小學生解釋「什麼是意境」？
+對未來「AI 寫作」是否會取代人類純文學創作的看法？
+化解「讀中文系只能當老師或失業」誤解的方式？
+推動「古典文學現代化」在快節奏社會中最大的挑戰？
+「文學評論」與「創作實務」在學習過程中的本質區別？
+當你的審美觀點與教授或主流文學評論產生分歧時的應對？
+生活中最讓你覺得符合「文字有溫度」或「語言力量」的例子？
+對於需要研讀艱澀古籍、聲韻學與撰寫大量論述的心理準備？
+對「網路文學」與「輕小說」是否應納入正統文學研究的看法？
+「大數據分析」如何應用在語料庫研究或古典文獻整理上？
+對市售品牌「文青風行銷」背後文字運用邏輯的看法？
+支持政府強化中小學古文比例或推動台語文教育嗎？
+高齡社會中「傳記文學」對長者生命回顧與療癒的看法？
+AI 生成古詩詞與人類創作在情感深度與格律上的權衡？
+中文專業在「文化創意產業」與跨國文化輸出中的作用？
+處理文本分析時的細膩程度與邏輯論證嚴謹性的表現？
+面對枯燥的考據工作與冷門學術領域維持熱忱的方式？
+使用數位人文工具（如 CBETA、線上語料庫、排版軟體）的經驗？
+發現團隊在分組報告中對文本解讀流於表面或曲解原意的處理？
+與團隊在討論文學專案的創意執行或詮釋觀點意見分歧時的處理？
+未來十年台灣最需要守護或傳承的文化核心價值？
+大學四年想培養的跨領域（如數位出版、藝術設計）能力？
+最後給我們一個非錄取你不可的理由。`,
+
+        "外國語文學系": `為什麼選外文系而非翻譯系或應用外語系？
+「外文人」在跨文化溝通與國際談判中的核心角色？
+分享高中參與英文檢定、文學創作或英語演講的經驗。
+外文系需要敏銳的語言直覺與跨文化同理心的特質？
+本系課程中對「西洋文學史」、「語言學」或「第二外語」較感興趣的部分？
+外文系除了翻譯外的職涯發展（如國際商務、外交、數位行銷）？
+用一個「文學角色」或「外文詞彙」形容自己。
+如何向小學生解釋「什麼是文化差異」？
+對未來「AI 即時翻譯」是否會取代外文專業人才的看法？
+化解「外文系只是在學英文」或「讀外文沒專長」誤解的方式？
+推動「多元文化理解」在保護主義盛行時代下最大的挑戰？
+「語言學習」與「文學研究」在大學教育中的本質區別？
+當你對文本的詮釋與教授或權威學說產生強烈衝突時的應對？
+生活中最讓你覺得符合「語言形塑思維（Sapir-Whorf）」的例子？
+對於需要閱讀大量原文書、撰寫全英學術論文的心理準備？
+對「世界英語（World Englishes）」與「正統英語」權力關係的看法？
+「語料庫語言學」如何應用在分析社會偏見或語音辨識上？
+對市售品牌使用「外語標語（Slogan）」產生的文化想像分析？
+支持政府推動「雙語國家政策」及其執行方式嗎？
+高齡社會中語言學習對預防認知功能退化的心理看法？
+AI 生成翻譯內容在處理「文學隱喻」與「雙關語」時的衝擊？
+外語專業在「公共外交」與台灣品牌國際化中的作用？
+處理文本細節、文法嚴謹度與發音精確性的表現？
+面對枯燥的語言規則與艱澀的文學理論維持熱忱的方式？
+使用數位翻譯工具（如 CAT 工具、線上辭典、語法檢查）的經驗？
+發現團隊成員在翻譯專案中過度依賴機翻導致語意錯誤的處理？
+與團隊在討論文學專案的創意詮釋或翻譯風格意見分歧時的處理？
+未來十年台灣最需要具備的國際語言軟實力是什麼？
+大學四年想培養的跨領域（如商管、電腦科學）能力？
+最後給我們一個非錄取你不可的理由。`
+    };
+
+    const departments = ["經濟學系", "Department of Economics", "法律學系", "企業管理學系", "財務金融學系", "會計學系", "資訊管理學系", "大眾傳播學系", "政治學系", "心理學系", "中國文學系", "外國語文學系"];
+
+    let originalQuestions = [];
+    let remainingQuestions = [];
+
+    const nav = document.getElementById('dept-nav');
+    departments.forEach(dept => {
+        const btn = document.createElement('button');
+        btn.innerText = dept;
+        btn.onclick = () => switchDept(dept);
+        nav.appendChild(btn);
+    });
+
+    function switchDept(dept) {
+        document.getElementById('current-dept-title').innerText = `${dept} 面試練習`;
+        Array.from(nav.children).forEach(btn => btn.className = btn.innerText === dept ? 'active' : '');
+        document.getElementById('questionInput').value = deptData[dept];
+        backToSetup();
+    }
+
+    function startPractice() {
+        const text = document.getElementById('questionInput').value;
+        originalQuestions = text.split('\n').map(q => q.trim()).filter(q => q !== "");
+        
+        if (originalQuestions.length > 0) {
+            remainingQuestions = [...originalQuestions];
+            updateProgress();
+            document.getElementById('setup-section').classList.add('hidden');
+            document.getElementById('practice-section').classList.remove('hidden');
+            document.getElementById('display-area').innerText = "點擊按鈕開始練習全部 " + originalQuestions.length + " 題！";
+        }
+    }
+
+    function pickQuestion() {
+        if (remainingQuestions.length === 0) {
+            alert("🎉 太強了！這輪所有題目都練習完畢，系統將自動重設。");
+            remainingQuestions = [...originalQuestions];
+        }
+
+        const randomIndex = Math.floor(Math.random() * remainingQuestions.length);
+        const selected = remainingQuestions[randomIndex];
+        remainingQuestions.splice(randomIndex, 1);
+        
+        document.getElementById('display-area').innerText = selected;
+        updateProgress();
+    }
+
+    function updateProgress() {
+        document.getElementById('progressDisplay').innerText = `剩餘題數：${remainingQuestions.length} / ${originalQuestions.length}`;
+    }
+
+    function backToSetup() {
+        document.getElementById('setup-section').classList.remove('hidden');
+        document.getElementById('practice-section').classList.add('hidden');
+    }
+
+    // 將原本錯誤的 "經濟系" 修正為動態讀取陣列的第一個科系，解決預設載入空白的問題
+    switchDept(departments[0]);
+</script>
+</body>
+</html>
