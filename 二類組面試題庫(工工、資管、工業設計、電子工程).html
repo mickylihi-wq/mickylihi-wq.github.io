@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>二類組面試題庫(工工、資管、工業設計、電子工程)</title>
+    <style>
+        :root { --primary-color: #1a365d; --bg-color: #f7fafc; }
+        body { font-family: "Microsoft JhengHei", sans-serif; background-color: var(--bg-color); margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        nav { background: #2d3748; width: 100%; padding: 10px 0; display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; position: sticky; top: 0; z-index: 100; }
+        nav button { background: #4a5568; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; transition: 0.3s; font-size: 0.85rem; }
+        nav button.active { background: #3182ce; border-bottom: 3px solid #ebf8ff; font-weight: bold; }
+        .container { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); width: 95%; max-width: 750px; margin: 30px 0; text-align: center; }
+        h1 { color: #1a365d; margin-top: 0; font-size: 1.5rem; }
+        #setup-section textarea { width: 100%; height: 400px; padding: 12px; border: 2px solid #ddd; border-radius: 8px; resize: vertical; box-sizing: border-box; font-size: 1rem; line-height: 1.5; }
+        .btn-main { background-color: var(--primary-color); color: white; padding: 12px 30px; border: none; border-radius: 50px; cursor: pointer; font-size: 1.1rem; font-weight: bold; margin-top: 15px; transition: 0.2s; }
+        .btn-main:hover { background-color: #2a4365; }
+        .btn-random { background-color: #2b6cb0; color: white; width: 100%; padding: 20px; border: none; border-radius: 12px; cursor: pointer; font-size: 1.4rem; font-weight: bold; transition: 0.2s; }
+        .btn-random:hover { background-color: #2c5282; }
+        #display-area { min-height: 220px; display: flex; align-items: center; justify-content: center; background-color: #ebf8ff; border: 3px dashed #4299e1; padding: 30px; border-radius: 12px; font-size: 1.5rem; color: #2a4365; margin: 20px 0; line-height: 1.5; font-weight: 500; }
+        .progress-tag { background: #bee3f8; color: #2c5282; padding: 5px 15px; border-radius: 20px; font-weight: bold; margin-bottom: 10px; display: inline-block; }
+        .hidden { display: none; }
+        .footer-link { margin-top: 20px; color: #a0aec0; font-size: 0.9rem; text-decoration: underline; cursor: pointer; display: inline-block; }
+    </style>
+</head>
+<body>
+
+<nav id="dept-nav"></nav>
+
+<div class="container">
+    <h1 id="current-dept-title">載入中...</h1>
+    <div id="setup-section">
+        <p style="text-align: left; color: #718096; font-size: 0.9rem;">【不重複模式】系統已預載該科系 30 題專業考題：</p>
+        <textarea id="questionInput"></textarea>
+        <br>
+        <button class="btn-main" onclick="startPractice()">儲存並進入練習模式</button>
+    </div>
+    <div id="practice-section" class="hidden">
+        <div id="progressDisplay" class="progress-tag">剩餘題數：--</div>
+        <div id="display-area">準備好了，請點擊抽題！</div>
+        <button class="btn-random" onclick="pickQuestion()">🎲 隨機抽一題 (不重複)</button>
+        <br>
+        <div class="footer-link" onclick="backToSetup()">重新編輯本系題庫 / 更換科系</div>
+    </div>
+</div>
+
+<script>
+    const deptData = {
+        "工工系": `為什麼選擇工工系而非機械系或企管系？你如何定義工工系的價值？
+「工業工程是把事情做得更好」的藝術，請分享一個生活中你優化流程的經驗。
+你認為「效率」與「品質」發生衝突時，工程師應如何權衡？
+對於「工業 4.0」與智慧製造，你有什麼觀察或認識？
+工工系被稱為「工程界的經理人」，你認為自己具備哪些管理特質？
+請解釋「人機介面（Human-Machine Interface）」在工廠設計中的重要性。
+如何向小學生解釋什麼是「供應鏈管理」？
+大數據分析在工工領域中扮演什麼樣的角色？
+分享一次你在團隊合作中，透過協調溝通提升整體效率的經驗。
+你認為「精實管理（Lean Management）」可以應用在非製造業（如服務業）嗎？
+當你發現生產線上某個環節出現瓶頸（Bottleneck）時，你會如何除錯？
+你對「永續生產」與「循環經濟」在工工領域的發展有何看法？
+工工系需要處理大量的統計與運籌學，你對數學邏輯的抗壓性如何？
+如果你可以改良一款市售產品的生產流程，你想改良什麼？
+在數位轉型的趨勢下，你認為工工工程師最需要具備哪種軟體能力？
+面對多目標決策問題（Multi-objective Optimization），你通常如何思考？
+你如何看待「自動化」取代勞動力對社會公平的影響？
+請分析一個你觀察到的「設計不當導致效率低下」的生活實例。
+對於未來想進入半導體產業、物流業還是顧問業服務？
+你對「全面品質管理（TQM）」與六標準差有初步了解嗎？
+面對高度重複性且枯燥的製程監控工作，你如何維持專注與熱忱？
+分享一次你利用邏輯思維或數據輔助決策的具體例子。
+如果你錄取了，大學四年你最想進入哪一間研究室或專研哪個領域？
+你如何平衡工廠產能最大化與員工過勞之間的倫理問題？
+對於「智慧型手機」生產鏈中，你認為哪一個環節最難被優化？
+如何建立一個「零職業災害」的工作環境？工工師能做什麼？
+你對目前的「全球缺工」現象有什麼工工視角的解決建議？
+優秀的工工人才需要具備細心，請分享一個你細心發現問題的例子。
+你認為「數據」是否能完全反映生產現場的真實狀況？
+請給面試官一個非錄取你不可的理由。`,
+
+        "資管系": `為什麼選擇資管系而非資工系或企管系？你如何定義這三者的差異？
+「資管人是技術與業務的橋樑」，請舉例說明你具備這種溝通特質嗎？
+你認為一個成功的資訊系統，最重要的衡量標準是什麼？
+對於「生成式 AI（如 ChatGPT）」如何改變企業營運模式的看法？
+請分享一次你嘗試解決電腦軟硬體問題，或優化資訊流程的經驗。
+你對「大數據分析」在預測消費行為上的應用有什麼觀察？
+資管系需要同時學習管理與程式，你如何平衡這兩個面向的學習？
+如何向不熟悉電腦的人解釋什麼是「雲端運算」？
+你認為「資訊安全」在企業營運中是資產還是負擔？為什麼？
+對於目前市面上「訂閱制服務」盛行的商務邏輯與系統架構看法？
+當系統開發進度嚴重落後，但業務端要求如期上線時，你會如何抉擇？
+你對「區塊鏈」在金融以外領域（如溯源）的發展潛力有何評價？
+請分析一個你最常用的 APP，並提出一個功能上的優化建議。
+在資訊爆炸時代，你如何過濾有效資訊並進行數據視覺化呈現？
+你認為「使用者經驗（UX）」對後台系統設計有多重要？
+對於未來想成為系統分析師（SA）、專案經理（PM）還是開發者？
+你對「數位轉型」對台灣中小企業帶來的挑戰與機遇有何見解？
+分享一次你參與專題或活動，透過資訊工具解決人為混亂的經驗。
+你如何看 AI 自動編碼（GitHub Copilot）對初級工程師職涯的影響？
+什麼是「電子商務」的未來？你認為實體店面會完全消失嗎？
+資管系需要強大邏輯，高中數學中哪個單元對你學習程式最有幫助？
+如果你發現公司的資訊系統存在重大資安漏洞但主管要求隱瞞，你怎麼辦？
+你對「物聯網（IoT）」如何串聯智慧家庭與智慧城市的認識？
+如何平衡系統開發的「快速迭代」與「系統穩定度」？
+你認為資管系學生在跨領域合作中最容易遇到的溝通障礙是什麼？
+分享一個你觀察到「資訊不對稱」導致商業損失的例子。
+對於未來「數位身分證」或「電子政務」的普及，你的看法與憂慮？
+你預計在大學四年培養哪些跨領域（如財經、法律、心理）能力？
+面對快速變動的技術框架，你如何建立自己的持續學習系統？
+請給面試官一個非錄取你不可的理由。`,
+
+        "工業設計系": `為什麼選擇工設系而非視覺設計或純藝術？你對「設計」的定義為何？
+你認為「美學」與「功能」發生衝突時，設計師應如何取捨？
+請分享一位你最喜歡的工業設計師及其作品，並說明對你的啟發。
+你平時會觀察生活中的哪些產品細節？請描述一個讓你驚豔的設計。
+工業設計師需要熬夜做模型與反覆提案，你自認抗壓性與手作能力如何？
+分享一次你參與創作（繪畫、手作、設計）並完成它的經驗。
+你如何衡量一個設計是「好設計」？請提出三項標準。
+對於「永續設計（Eco-design）」與環境保護，設計師能做什麼？
+你認為「使用者研究（User Research）」對產品開發的重要性為何？
+如果你要為高齡者重新設計一款手機，你會關注哪些痛點？
+分享一次你面對批評並修改作品，最終達成更好成果的經驗。
+你認為 3D 列印與數位製造技術如何改變傳統工業設計流程？
+設計師常被業主改稿，當你的美學堅持與市場考量衝突時，你如何應對？
+你對「極簡主義」與「功能主義」在產品設計上的看法？
+請描述一個你觀察到「設計不當」導致使用者困擾的生活產品。
+對於未來想進入科技業（消費電子）、交通工具還是文創產業服務？
+你如何看待「人工智慧生成圖像（AI Art）」對設計師職涯的衝擊？
+分享一次你運用聯想力或創意，解決一個具體問題的經驗。
+你認為「情感設計」如何增加產品與使用者之間的連結？
+如果大學五年都要花很多錢買模型材料，你有心理準備與經濟規劃嗎？
+設計系需要強大觀察力，請分享一個你觀察到的小細節並轉化為創意的例子。
+如果你要設計一款「未來的交通工具」，你會加入哪些前衛功能？
+你對安藤忠雄、深澤直人或其他大師的設計風格有什麼心得？
+如何平衡產品的「獨特性」與「可量產性」？
+你預計在大學四年培養哪些非設計（如材料學、心理學）能力？
+分享一個你最欣賞的台灣本土產品設計，並點出其成功關鍵。
+面對長時間枯燥的打磨、修整模型過程，你如何維持熱心？
+你認為設計師在解決社會問題（如難民營器材、公衛設備）的角色為何？
+如何讓不理解設計價值的民眾，感受到設計對生活的改變？
+請給面試官一個非錄取你不可的理由。`,
+
+        "電子工程系": `為什麼選擇電子系而非電機系或資工系？你如何看待半導體產業？
+「電子系是硬體的靈魂」，你對電路設計與硬體架構有什麼初步熱忱？
+請解釋「摩爾定律（Moore's Law）」目前的瓶頸與你的看法。
+你認為「半導體技術」在未來十年最重要的發展方向是什麼？
+分享一次你嘗試維修電子產品，或動手組裝電路、機器人的經驗。
+你對「IC 設計」與「製程研發」哪一個部分比較感興趣？
+電子工程需要極高的細心度，請分享一個你展現細心的具體例子。
+如何向小學生解釋什麼是「電晶體」？
+你對「人工智慧晶片（AI Chip）」與邊緣運算（Edge Computing）的認識？
+對於未來想進入台積電、聯發科等一線科技廠，你做了什麼準備？
+當你的電路實驗結果與學理預期不符時，你會如何進行故障排除（Debug）？
+你對「物聯網（IoT）」感測器技術在智慧醫療上的應用有什麼看法？
+電子系課業極其沈重（如：三電一材），你如何安排時間與排解壓力？
+如果你可以發明一個新的電子元件，你想解決什麼問題？
+你對「第三代半導體（如碳化矽、氮化鎵）」的趨勢有何了解？
+面對半導體產業的「高薪但高壓」環境，你的心理素質準備好了嗎？
+你認為電子工程師在「綠能轉型（如：電動車電力轉換）」的角色為何？
+分享一次你在團隊中與同儕討論數理難題並達成共識的經驗。
+你如何看待「量子電腦」技術對傳統電子計算的潛在威脅？
+高中物理的電學部分，哪一個定律或概念最讓你覺得有趣？
+電子工程系需要持續追蹤新製程技術，你平時如何獲取科技知識？
+如果你發現你設計的晶片有微小瑕疵但上級要求如期出貨，你怎麼辦？
+你對「系統單晶片（SoC）」整合各種功能的趨勢有何見解？
+如何平衡電子產品的「效能極大化」與「低功耗（省電）」？
+你認為電子系學生在跨組合作（如：與軟體端）中最容易遇到的阻礙？
+分享一個你觀察到「硬體創新」徹底改變人類生活方式的例子。
+對於未來「穿戴式裝置」與人體融合技術的倫理與發展看法？
+你預計在大學四年學會哪些硬體描述語言（如：Verilog）或模擬軟體？
+面對實驗室長達數小時的量測與調校，你如何維持專注力？
+請給面試官一個非錄取你不可的理由。`
+    };
+
+    const departments = ["工工系", "資管系", "工業設計系", "電子工程系"];
+
+    let originalQuestions = [];
+    let remainingQuestions = [];
+
+    const nav = document.getElementById('dept-nav');
+    departments.forEach(dept => {
+        const btn = document.createElement('button');
+        btn.innerText = dept;
+        btn.onclick = () => switchDept(dept);
+        nav.appendChild(btn);
+    });
+
+    function switchDept(dept) {
+        document.getElementById('current-dept-title').innerText = `${dept} 面試練習`;
+        Array.from(nav.children).forEach(btn => btn.className = btn.innerText === dept ? 'active' : '');
+        document.getElementById('questionInput').value = deptData[dept];
+        backToSetup();
+    }
+
+    function startPractice() {
+        const text = document.getElementById('questionInput').value;
+        originalQuestions = text.split('\n').map(q => q.trim()).filter(q => q !== "");
+        
+        if (originalQuestions.length > 0) {
+            remainingQuestions = [...originalQuestions];
+            updateProgress();
+            document.getElementById('setup-section').classList.add('hidden');
+            document.getElementById('practice-section').classList.remove('hidden');
+            document.getElementById('display-area').innerText = "點擊按鈕開始練習全部 " + originalQuestions.length + " 題！";
+        } else {
+            alert("題庫內容為空，請輸入題目後再儲存。");
+        }
+    }
+
+    function pickQuestion() {
+        if (remainingQuestions.length === 0) {
+            alert("🎉 太強了！這輪所有題目都練習完畢，系統將自動重設。");
+            remainingQuestions = [...originalQuestions];
+        }
+
+        const randomIndex = Math.floor(Math.random() * remainingQuestions.length);
+        const selected = remainingQuestions[randomIndex];
+        remainingQuestions.splice(randomIndex, 1);
+        
+        document.getElementById('display-area').innerText = selected;
+        updateProgress();
+    }
+
+    function updateProgress() {
+        document.getElementById('progressDisplay').innerText = `剩餘題數：${remainingQuestions.length} / ${originalQuestions.length}`;
+    }
+
+    function backToSetup() {
+        document.getElementById('setup-section').classList.remove('hidden');
+        document.getElementById('practice-section').classList.add('hidden');
+    }
+
+    // 初始載入第一個科系
+    switchDept(departments[0]);
+</script>
+</body>
+</html>
