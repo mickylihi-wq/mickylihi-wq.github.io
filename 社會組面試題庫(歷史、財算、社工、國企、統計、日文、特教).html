@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>社會組面試題庫(歷史、財算、社工、國企、統計、日文、特教)</title>
+    <style>
+        :root { --primary-color: #2c3e50; --bg-color: #f4f7f6; }
+        body { font-family: "Microsoft JhengHei", sans-serif; background-color: var(--bg-color); margin: 0; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        nav { background: #2c3e50; width: 100%; padding: 10px 0; display: flex; justify-content: center; flex-wrap: wrap; gap: 8px; position: sticky; top: 0; z-index: 100; }
+        nav button { background: #34495e; color: white; border: none; padding: 8px 15px; border-radius: 4px; cursor: pointer; transition: 0.3s; font-size: 0.85rem; }
+        nav button.active { background: #e67e22; border-bottom: 3px solid #ecf0f1; font-weight: bold; }
+        .container { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); width: 95%; max-width: 750px; margin: 30px 0; text-align: center; }
+        h1 { color: #2c3e50; margin-top: 0; font-size: 1.5rem; }
+        #setup-section textarea { width: 100%; height: 400px; padding: 12px; border: 2px solid #ddd; border-radius: 8px; resize: vertical; box-sizing: border-box; font-size: 1rem; line-height: 1.5; }
+        .btn-main { background-color: var(--primary-color); color: white; padding: 12px 30px; border: none; border-radius: 50px; cursor: pointer; font-size: 1.1rem; font-weight: bold; margin-top: 15px; transition: 0.2s; }
+        .btn-main:hover { background-color: #1a252f; }
+        .btn-random { background-color: #e67e22; color: white; width: 100%; padding: 20px; border: none; border-radius: 12px; cursor: pointer; font-size: 1.4rem; font-weight: bold; transition: 0.2s; }
+        .btn-random:hover { background-color: #d35400; }
+        #display-area { min-height: 220px; display: flex; align-items: center; justify-content: center; background-color: #fdfefe; border: 3px dashed #bdc3c7; padding: 30px; border-radius: 12px; font-size: 1.5rem; color: #2c3e50; margin: 20px 0; line-height: 1.5; font-weight: 500; }
+        .progress-tag { background: #ebf5fb; color: #2980b9; padding: 5px 15px; border-radius: 20px; font-weight: bold; margin-bottom: 10px; display: inline-block; }
+        .hidden { display: none; }
+        .footer-link { margin-top: 20px; color: #888; font-size: 0.9rem; text-decoration: underline; cursor: pointer; display: inline-block; }
+    </style>
+</head>
+<body>
+
+<nav id="dept-nav"></nav>
+
+<div class="container">
+    <h1 id="current-dept-title">載入中...</h1>
+    <div id="setup-section">
+        <p style="text-align: left; color: #666; font-size: 0.9rem;">【不重複模式】系統已預載該科系 30 題專業考題：</p>
+        <textarea id="questionInput"></textarea>
+        <br>
+        <button class="btn-main" onclick="startPractice()">儲存並進入練習模式</button>
+    </div>
+    <div id="practice-section" class="hidden">
+        <div id="progressDisplay" class="progress-tag">剩餘題數：--</div>
+        <div id="display-area">準備好了，請點擊抽題！</div>
+        <button class="btn-random" onclick="pickQuestion()">🎲 隨機抽一題 (不重複)</button>
+        <br>
+        <div class="footer-link" onclick="backToSetup()">重新編輯本系題庫 / 更換科系</div>
+    </div>
+</div>
+
+<script>
+    const deptData = {
+        "歷史系": `為什麼選擇歷史系？你認為歷史對現代社會有什麼實質意義？
+如果你能穿越到某個歷史時代觀察三小時，你會選哪裡？為什麼？
+「歷史是由勝利者編寫的」，你如何看待這句話？
+歷史研究與「聽故事」有什麼本質上的差別？
+你最喜歡哪一位歷史人物？請評價他的歷史功過。
+除了歷史課本，你平時會看哪些歷史相關書籍或媒體？
+如果有人說「讀歷史沒出路」，你會如何回應？
+AI 繪圖與大數據分析對歷史研究能產生什麼樣的影響？
+你對哪一個歷史斷代或主題（如：台灣史、二戰、藝術史）最感興趣？
+歷史真相是否存在？還是所有歷史都是某種程度的詮釋？
+如何區分「歷史實事」與「歷史神話（如：三國演義）」？
+請描述一個歷史事件對現今國際政治局勢的長期影響。
+如果你要為家鄉寫一段歷史，你會選擇什麼觀點切入？
+你認為歷史系學生最需要具備哪種核心特質（如：批判性思考、同理心）？
+在數位時代，實體博物館與文獻還有存在的必要嗎？
+當歷史考據與大眾情感衝突時（如：英雄人物的醜聞），歷史學家應如何處理？
+歷史研究中，文字記載與考古遺跡哪一個更具公信力？
+你如何看待「影視劇改編歷史」對大眾認知歷史的影響？
+請分享一次你閱讀歷史書籍後，價值觀產生重大改變的經驗。
+你對「數位人文」在歷史學中的應用有什麼了解？
+如果沒錄取歷史系，你的備選計畫是什麼？
+高中時期最喜歡哪一部分的歷史課程？理由為何？
+如何讓不喜歡歷史的年輕一代對歷史產生興趣？
+歷史系畢業後，你希望在哪個領域發揮所長？
+你認為「通史」與「專史」學習的先後順序應如何安排？
+歷史學家在面對戰爭或屠殺等創傷記憶時，應扮演什麼角色？
+如果你可以改寫一個歷史轉折點，你想改寫哪裡？
+環境、氣候因素在歷史變遷中扮演多重要的角色？
+你認為史學研究應追求絕對客觀，還是應帶有當代的情感關懷？
+請給面試官一個非錄取你不可的理由。`,
+
+        "財算系": `為什麼想讀財算系（財務金融與精算）？你具備哪些數學天分？
+精算師在金融保險產業中的核心職責是什麼？
+請解釋「風險管理」對一個現代企業的重要性。
+你如何看待保險業在超高齡社會中所扮演的角色？
+精算考試過程非常漫長，你做好了長期備戰的心理準備嗎？
+分享一次你運用數據分析或邏輯推演解決日常問題的經驗。
+你認為數學在金融交易中是輔助工具，還是核心靈魂？
+如何向一個沒有數學背景的人解釋什麼是「複利效應」？
+AI 與大數據會取代精算師的工作，還是成為助益？你的看法？
+在面對極低機率但高傷害的風險（如：黑天鵝事件）時，該如何應對？
+你對目前的金融科技（FinTech）有什麼觀察或認識？
+請說明「期望值」在保險費率制定中的應用概念。
+當預測模型與現實市場走勢出現重大偏差時，你會如何除錯？
+財算系課業壓力極大，你平時如何排解壓力與焦慮？
+你對ESG（環境、社會、公司治理）在金融投資中的影響有何看法？
+為什麼銀行需要對貸款人進行信用評等？背後的邏輯是什麼？
+如果錄取了，大學四年你想重點培養哪些跨領域能力？
+你對加密貨幣與去中心化金融（DeFi）的發展趨勢有何評價？
+請舉例說明生活中一個「風險與報酬成正比」的實際現象。
+除了專業學識，你認為精算師最需要的「軟實力」是什麼？
+如何平衡保險公司的獲利目標與對保戶的公平正義？
+你平時會關注哪些財經新聞？請分享近期印象最深的一則。
+精算需要高度細心，請分享一個你展現細心程度的具體例子。
+對於「虛擬保險」與數位化投保趨勢的看法？
+你如何看待少子化對人壽保險產業的衝擊？
+財務建模中，假設(Assumption)的正確性與模型本身哪個更重要？
+你對「再保險」這個概念有什麼理解？
+數學與程式能力對於未來的財算人，哪一個更具優先性？
+如果精算考試連續失敗兩次，你會選擇放棄還是堅持？
+請給面試官一個非錄取你不可的理由。`,
+
+        "社工系": `為什麼想成為社會工作者？是什麼關鍵事件啟發了你？
+你認為社工與「志工（義工）」最大的差別在哪裡？
+當你服務的個案對你產生過度依賴時，你會如何處理？
+社工工作容易產生「替代性創傷」，你如何建立自己的心理防護？
+你認為「同理心」與「同情心」在助人過程中有何不同？
+面對拒絕接受幫助、態度惡劣的個案，你如何開啟對話？
+社工在面對個案隱私與社會安全（如：家暴舉報）衝突時的抉擇？
+台灣目前最迫切需要被解決的社會問題是什麼？
+如果你發現政府的社福政策有嚴重瑕疵，你會如何反應？
+你如何看待「個案自決」與社工建議之間的權衡？
+請分享一次你參與社會服務或照顧他人的經驗。
+社工薪資普遍偏低且工時長，你如何維持長期的工作熱忱？
+你認為助人是為了「給他魚吃」還是「教他釣魚」？
+在多元文化社會中，如何服務背景完全不同的少數族群？
+當你發現個案正在進行違法行為但生活困苦時，你會如何處理？
+社工在跨專業團隊（醫護、律師、警察）中應扮演什麼角色？
+你對「長期照顧 2.0」政策有什麼認識與看法？
+社工需要高度的溝通能力，請分享一次你排解人際衝突的經驗。
+你如何界定助人工作的「專業邊界」？
+對於街友問題，你認為是以安置為主還是自立支援為主？
+AI 科技能否輔助社工工作？例如：風險預警系統。
+你認為貧窮是個人不努力，還是社會結構的問題？
+當你與同事在個案處置意見分歧時，你會如何溝通？
+社工在「預防醫學」或「心理健康」領域可以發揮什麼作用？
+你最想服務的對象是誰（長者、兒少、身障、受刑人）？為什麼？
+社工工作需要高度抗壓，請分享一次你從低谷復原的經驗。
+如果你錄取了，你打算在大學期間充實哪些非專業知識？
+對「社會企業」利用商業模式解決社會問題的看法？
+如何衡量社工服務的「成效」？這能量化嗎？
+請給面試官一個非錄取你不可的理由。`,
+
+        "國企系": `為什麼選國企系而非企管系？你對「國際化」的定義是什麼？
+在全球化退潮（短鏈供應）趨勢下，國企系的價值在哪裡？
+如果你要將一個台灣品牌推向國際市場，你會怎麼做？
+請分析一個你觀察到的「文化差異導致商業失敗」的例子。
+你認為優秀的國際商務人才需要具備哪三項核心能力？
+如何看待美中貿易戰對台灣企業全球布局的影響？
+分享一次你在團隊中擔任領導者或溝通者的經驗。
+對於跨國企業在開發中國家造成的環境議題，你的看法？
+除了英文，你還想學習哪種語言來增進國際競爭力？為什麼？
+你對「數位貿易」與電子商務全球化的觀察為何？
+如果派你去一個文化背景完全陌生的國家工作三年，你最擔心什麼？
+如何處理跨國團隊中，因為文化禁忌而產生的溝通誤解？
+請分析一家你最欣賞的跨國企業及其成功關鍵。
+你如何看待「地緣政治風險」對企業經營的重要性？
+在國企系中，你最感興趣的模組是行銷、財務還是策略管理？
+面對資訊爆炸的時代，你如何過濾並分析有用的國際經貿資訊？
+你對ESG（企業社會責任）如何影響企業獲利有什麼見解？
+如果一家大公司錄取你，但要你做不道德的競爭，你會如何抉擇？
+請解釋「跨國併購」中，除了資金外，最難克服的挑戰是什麼？
+你認為台灣在未來十年，哪一個產業最具國際競爭力？
+面對快速變動的全球市場，你如何訓練自己的靈活性？
+你平時會收看哪些國際媒體（如：BBC, WSJ, Bloomberg）？
+國企系課業多元，你如何平衡各種理論與實作報告？
+分享一次你與不同背景或立場的人合作達成目標的經驗。
+對於「人才流失（Brain Drain）」與國際人才競爭的看法？
+你認為自貿協定（FTA）對台灣傳統產業的利與弊為何？
+當業績目標與長期品牌聲譽衝突時，管理者該如何決定？
+你對「斜槓」或「跨領域整合」在國際商務中的看法？
+五年後，你希望在什麼樣規模的公司擔任什麼樣的角色？
+請給面試官一個非錄取你不可的理由。`,
+
+        "統計系": `為什麼選擇統計系？你如何定義統計學的本質？
+「相關性不等於因果關係」，請舉一個生活中的例子。
+在 AI 時代，統計學會被數據科學或機器學習取代嗎？
+分享一次你使用圖表或數據來說服別人的經驗。
+如果你在研究中發現樣本數量不足，你會如何處理？
+你對「民意調查」經常不準確的現象有什麼統計學上的觀察？
+大數據時代，統計學家與資料科學家的區別是什麼？
+高中數學中，你最感興趣的部分是哪裡？與統計有何關聯？
+統計學中的「誤差」是敵還是友？我們該如何與之共處？
+如何向一個完全不懂統計的人解釋「信心水準」與「誤差範圍」？
+當你的分析結論與主管的直覺完全相反時，你會如何應對？
+你最喜歡哪一種統計分布或統計原理？理由為何？
+請描述一次你利用統計思維來優化日常效率的經驗。
+你認為統計學在醫學臨床試驗（如：疫苗開發）中的角色為何？
+統計專業非常枯燥且需要高度邏輯，你如何保持專注？
+如何判斷一個報表數據是否有「造假」或「偏誤」的嫌疑？
+你對現今「演算法推薦系統」產生的同溫層效應有何看法？
+對於「量化研究」與「質性研究」在解決社會問題上的互補性？
+你預計在大學四年學會哪些統計軟體（如：R, Python, SAS）？
+統計學如何幫助企業進行「精準行銷」？
+當實驗數據顯示不顯著時，這算是一個「失敗」的研究嗎？
+分享一個你觀察到「數據誤導大眾」的案例。
+統計學家需要具備人文關懷嗎？數據是否能反映人的情感？
+你認為博弈（賭博）中的統計機率與現實投資有何異同？
+面對龐大的原始數據(Raw Data)，你通常第一步會做什麼處理？
+統計系需要強大的抗壓性，請分享你應對龐大作業量的經驗。
+如何平衡統計模型的「複雜度」與「可解釋性」？
+你對「人工智慧是否能擁有創造力」從統計機率角度怎麼看？
+畢業後你希望進入金融、電商、公部門還是醫學領域服務？
+請給面試官一個非錄取你不可的理由。`,
+
+        "日文系": `為什麼選擇日文系？你對日本語言或文化的熱情起源為何？
+除了動漫或流行文化，日本還有哪些文化層面讓你感興趣？
+你認為「學習日文」與「讀日文系」有什麼本質上的差別？
+日本文化中常見的「讀空氣（KY）」現象，你如何看待？
+請分享你目前學習日文的進度與遇到的最大困難。
+你如何看待「AI 即時翻譯」對日文系畢業生未來職涯的衝擊？
+日本社會常被形容為「禮多而拘謹」，這對國際商務交流有何影響？
+請分析一項台灣與日本在文化習慣上最顯著的差異。
+如果你要向日本人推薦台灣的一個景點，你會如何介紹？
+你如何看待「台日友好」在未來十年國際局勢中的發展趨勢？
+你最欣賞的日本文學家或電影導演是誰？請分享他的作品特色。
+日文中存在複雜的「敬語（Keigo）」系統，你認為其核心價值是什麼？
+你認為日文系學生除了語言，最該培養哪種跨領域能力？
+對於日本的「高齡化社會」解決方案，你覺得台灣有什麼可以學習之處？
+分享一次你與日本人溝通，或實際接觸日本文化的深度經驗。
+如果你錄取了，大學四年你如何分配學習語言與文化研究的時間？
+你對日本企業的「職人精神」與「終身雇用制」有何看法？
+你如何看待日本在全球供應鏈（如：半導體材料）中的關鍵地位？
+如果要在日本工作三年，你認為自己最需要克服的心理挑戰是什麼？
+請解釋「侘寂（Wabi-sabi）」這個美學概念在你心中的定義。
+你平時會看哪些日文學習媒體（如：NHK、YouTube 頻道）？
+除了日文，你是否也對日本歷史或地緣政治感興趣？為什麼？
+如何讓台灣的學生透過日文學習，拓展更廣闊的國際視野？
+面對日文學習的「高原期（進步緩慢期）」，你如何維持熱情？
+你對「日本傳統文化現代化」的成功案例（如：和服轉型）有何觀察？
+你希望畢業後在什麼領域（翻譯、經貿、外交、教學）發展？
+日本與台灣在防災意識上的差異，你有什麼看法？
+如果面試全程要求你用日文簡單自我介紹，你準備好了嗎？
+對於「學習語言是為了理解另一種思考方式」這句話，你的見解？
+請給面試官一個非錄取你不可的理由。`,
+
+        "特教系": `為什麼想選擇特教系？是什麼經歷或關鍵事件啟發了你？
+你對「融合教育（Inclusive Education）」的理解是什麼？它在實務上的優缺點為何？
+特教老師需要極大的耐心與抗壓性，你平時如何排解情緒與壓力？
+面對一位情緒失控或有攻擊行為的特殊生，你當下的直覺反應與處理步驟會是什麼？
+當特殊生的家長無法接受孩子的診斷，或不願配合教學時，你會如何溝通？
+你認為特殊教育的最終目標，是讓學生「適應社會」還是「發展自我潛能」？
+「資賦優異」也是特教的一環，你對資優教育有什麼初步的看法或認識？
+你有接觸或陪伴過身心障礙者的經驗嗎？請分享一件讓你印象最深刻的事。
+在普通班級中，你會如何引導一般生去接納並理解特殊生？
+現代科技與輔具如何幫助特殊教育的發展？請舉一個具體例子。
+你認為特教老師與社工、心理師、職能治療師在跨專業團隊中的分工與合作模式為何？
+若班上有一位自閉症光譜（ASD）學生，你會如何設計適合他參與的教學活動？
+針對注意力不足過動症（ADHD）的學生，你覺得給予藥物治療是唯一的解方嗎？
+面對普通班老師抱怨特殊生影響班級秩序，身為特教老師你會如何居中協調？
+在「資源班」與「特教班（集中式）」的教學模式中，你比較傾向哪一種？為什麼？
+「個別化教育計畫（IEP）」的核心價值是什麼？你認為撰寫時最該注意哪些重點？
+社會上常有對身心障礙者的刻板印象，你認為特教系學生能做些什麼來翻轉這些偏見？
+如果你是一位聽障或語障學生的老師，你會如何確保他能充分參與課堂討論？
+當特殊生在學習上長期沒有顯著進步，你如何調適心態並維持自己的教學熱忱？
+你對台灣現行的特殊教育法規或政策（例如特教法修法）有什麼初步的了解？
+你會如何協助即將畢業的特殊生進行「轉銜服務」（如升學或就業準備）？
+溝通障礙的學生可能無法用口語表達需求，你會如何與他們建立默契與信任？
+特教領域涵蓋甚廣（智能、視覺、聽覺、肢體、情緒等），你目前對哪一類最感興趣？為什麼？
+除了耐心和愛心，你認為一位優秀的特教老師還必須具備哪些「專業硬實力」？
+在少子化的趨勢下，你認為特殊教育的資源分配與未來發展會面臨什麼挑戰？
+分享一本你讀過與特殊教育、心理學或助人工作相關的書籍或電影，並談談你的心得。
+如果學生在課堂上突然癲癇發作或出現嚴重生理狀況，你的SOP（標準作業程序）是什麼？
+你如何看待「微分類」或「貼標籤」對特殊生自我認同與同儕關係的影響？
+若未來的職涯不當學校的特教老師，特教系的專業能讓你在哪些社會領域發揮價值？
+請給面試官一個非錄取你不可的理由。`
+    };
+
+    const departments = ["歷史系", "財算系", "社工系", "國企系", "統計系", "日文系", "特教系"];
+
+    let originalQuestions = [];
+    let remainingQuestions = [];
+
+    const nav = document.getElementById('dept-nav');
+    departments.forEach(dept => {
+        const btn = document.createElement('button');
+        btn.innerText = dept;
+        btn.onclick = () => switchDept(dept);
+        nav.appendChild(btn);
+    });
+
+    function switchDept(dept) {
+        document.getElementById('current-dept-title').innerText = `${dept} 面試練習`;
+        Array.from(nav.children).forEach(btn => btn.className = btn.innerText === dept ? 'active' : '');
+        document.getElementById('questionInput').value = deptData[dept];
+        backToSetup();
+    }
+
+    function startPractice() {
+        const text = document.getElementById('questionInput').value;
+        originalQuestions = text.split('\n').map(q => q.trim()).filter(q => q !== "");
+        
+        if (originalQuestions.length > 0) {
+            remainingQuestions = [...originalQuestions];
+            updateProgress();
+            document.getElementById('setup-section').classList.add('hidden');
+            document.getElementById('practice-section').classList.remove('hidden');
+            document.getElementById('display-area').innerText = "點擊按鈕開始練習全部 " + originalQuestions.length + " 題！";
+        } else {
+            alert("題庫內容為空，請輸入題目後再儲存。");
+        }
+    }
+
+    function pickQuestion() {
+        if (remainingQuestions.length === 0) {
+            alert("🎉 太強了！這輪所有題目都練習完畢，系統將自動重設。");
+            remainingQuestions = [...originalQuestions];
+        }
+
+        const randomIndex = Math.floor(Math.random() * remainingQuestions.length);
+        const selected = remainingQuestions[randomIndex];
+        remainingQuestions.splice(randomIndex, 1);
+        
+        document.getElementById('display-area').innerText = selected;
+        updateProgress();
+    }
+
+    function updateProgress() {
+        document.getElementById('progressDisplay').innerText = `剩餘題數：${remainingQuestions.length} / ${originalQuestions.length}`;
+    }
+
+    function backToSetup() {
+        document.getElementById('setup-section').classList.remove('hidden');
+        document.getElementById('practice-section').classList.add('hidden');
+    }
+
+    switchDept(departments[0]);
+</script>
+</body>
+</html>
